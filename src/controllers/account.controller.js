@@ -34,3 +34,26 @@ exports.createAccount = async (req, res) => {
     },
   });
 };
+
+exports.getAccount = async (req, res) => {
+    const { account_id } = req.body;
+    try {
+        const { rows } = await db.query('SELECT * FROM customer WHERE account_id = $1;', [account_id]);
+        console.log(rows);
+        if(rows.length === 0) {
+            res.status(404).send({
+                message: "No account found with the given account_id."
+            })
+        } else {
+            res.status(200).send({
+                message: "Account found successfully!",
+                account: rows[0]
+            })
+        }
+    } catch (error) {
+        res.status(500).send({
+            message: "An error occurred while searching for the account.",
+            error: error.message
+        });
+    }
+}
